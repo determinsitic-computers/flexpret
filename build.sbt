@@ -1,17 +1,16 @@
 
-ThisBuild / scalaVersion     := "2.12.13"
+ThisBuild / scalaVersion     := "2.13.12"
 ThisBuild / version          := "0.1.0"
 ThisBuild / organization     := "PRETIS"
 
-val chiselVersion = "3.5.6"
+val chiselVersion = "6.7.0"
 
 lazy val flexpret = (project in file("."))
   .settings(
     name := "flexpret",
     libraryDependencies ++= Seq(
-      "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-      "edu.berkeley.cs" %% "chiseltest" % "0.5.6" % "test",
-      "io.github.t-crest" % "soc-comm" % "0.1.5",
+      "org.chipsalliance" %% "chisel" % chiselVersion,
+      "edu.berkeley.cs" %% "chiseltest" % "6.0.0" % "test",
       "com.github.pureconfig" %% "pureconfig" % "0.17.6"
     ),
     scalacOptions ++= Seq(
@@ -19,7 +18,6 @@ lazy val flexpret = (project in file("."))
       "-deprecation",
       "-feature",
       "-Xcheckinit",
-      "-P:chiselplugin:genBundleElements",
     ),
-    addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
+    addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full),
   )

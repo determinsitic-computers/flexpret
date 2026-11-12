@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.util._
 
 import chisel.lib.uart.{Rx, Tx}
-import chisel.lib.fifo
 import wishbone.WishboneDevice
 import flexpret.core.FlexpretConfiguration
 

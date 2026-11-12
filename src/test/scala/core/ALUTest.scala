@@ -21,7 +21,7 @@ class ALUTest extends AnyFlatSpec with ChiselScalatestTester {
   def alu = new ALU()
 
   it should "shift correctly when the shift amount uses 5 bits" in {
-    test(alu).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(alu) { c =>
       c.io.op1.poke("h80000000".U(32.W))
       c.io.shift.poke("b11111".U(5.W))
       c.io.func.poke(ALUTypes.ShiftRightLogical)

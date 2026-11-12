@@ -25,7 +25,7 @@ class BasicMemoryTest extends AnyFlatSpec with ChiselScalatestTester {
   def core = new Core(conf, "h00000000".asUInt(32.W))
 
   it should "lw/sw" in {
-    test(core).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(core) { c =>
       val imemSim = new ImemSimulator(
         // Generate with ./scripts/parse_disasm.py
         /**

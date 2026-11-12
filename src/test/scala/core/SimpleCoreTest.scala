@@ -26,7 +26,7 @@ class SimpleCoreTest extends AnyFlatSpec with ChiselScalatestTester {
   def core = new Core(conf, "h00000000".asUInt(32.W))
 
   it should "write a CSR GPIO" in {
-    test(core).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(core) { c =>
       val imemSim = new ImemSimulator(
         // Generate with ./scripts/parse_disasm.py
         prog=scala.collection.immutable.Vector(
@@ -63,7 +63,7 @@ class SimpleCoreTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "write the toHost CSR" in {
-    test(core).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(core) { c =>
       val imemSim = new ImemSimulator(
         // Generate with ./scripts/parse_disasm.py
         prog=scala.collection.immutable.Vector(
@@ -91,7 +91,7 @@ class SimpleCoreTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "run a simple recursive program" in {
-    test(core).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(core) { c =>
       val imemSim = new ImemSimulator(
         // Generate with ./scripts/parse_disasm.py
         /**

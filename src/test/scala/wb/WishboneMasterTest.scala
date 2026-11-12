@@ -8,6 +8,7 @@ import flexpret.core.{FlexpretConfiguration, InstMemConfiguration}
 import flexpret.{WishboneBus, WishboneMaster, WishboneUart}
 
 class WishboneTest extends AnyFlatSpec with ChiselScalatestTester {
+  def timescope(block: => Unit): Unit = block
 
   behavior of "Wishbone"
 
@@ -20,25 +21,23 @@ class WishboneTest extends AnyFlatSpec with ChiselScalatestTester {
 
   // Write word to the Wishbone master (equivalent of a stw instruction)
   def write(c: WishboneMaster, addr: Int, data: Int): Unit = {
-    timescope {
-      // Request a write
-      c.busIO.data_in.poke(data.U)
-      c.busIO.write.poke(true.B)
-      c.busIO.enable.poke(true.B)
-      c.busIO.addr.poke(addr.U)
-      c.clock.step(1)
-    }
+    c.busIO.data_in.poke(data.U)
+    c.busIO.write.poke(true.B)
+    c.busIO.enable.poke(true.B)
+    c.busIO.addr.poke(addr.U)
+    c.clock.step(1)
+    c.busIO.enable.poke(false.B)
+    c.busIO.write.poke(false.B)
   }
 
   // Read word from the wb master (ldw)
   def read(c: WishboneMaster, addr: Int, eData: Int) = {
-    timescope {
-      c.busIO.write.poke(false.B)
-      c.busIO.enable.poke(true.B)
-      c.busIO.addr.poke(addr.U)
-      c.clock.step()
-      c.busIO.data_out.expect(eData.U)
-    }
+    c.busIO.write.poke(false.B)
+    c.busIO.enable.poke(true.B)
+    c.busIO.addr.poke(addr.U)
+    c.clock.step()
+    c.busIO.data_out.expect(eData.U)
+    c.busIO.enable.poke(false.B)
   }
 
   // Assert a read transaction on the WB interface og the master
@@ -63,19 +62,18 @@ class WishboneTest extends AnyFlatSpec with ChiselScalatestTester {
 
   // Serve a write response back to the WB master
   def serveWriteResp(c: WishboneMaster) = {
-    timescope {
-      c.wbIO.ack.poke(true.B)
-      c.clock.step()
-    }
+    c.wbIO.ack.poke(true.B)
+    c.clock.step()
+    c.wbIO.ack.poke(false.B)
   }
 
   // Serve a read response back to the WB master
   def serveReadResp(c: WishboneMaster, data: Int) = {
-    timescope {
-      c.wbIO.ack.poke(true.B)
-      c.wbIO.rdData.poke(data.U)
-      c.clock.step(1)
-    }
+    c.wbIO.ack.poke(true.B)
+    c.wbIO.rdData.poke(data.U)
+    c.clock.step(1)
+    c.wbIO.ack.poke(false.B)
+    c.wbIO.rdData.poke(0.U)
   }
 
   val conf = FlexpretConfiguration(threads = 1, flex = false, clkFreqMHz=100,

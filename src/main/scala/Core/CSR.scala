@@ -128,7 +128,7 @@ class CSR(confHash: UInt, implicit val conf: FlexpretConfiguration) extends Modu
 
   // Read/modify/write for input data depending on type.
   val data_out = Wire(UInt())
-  val data_in = MuxLookup(io.rw.csr_type, io.rw.data_in, Array(
+  val data_in = MuxLookup(io.rw.csr_type, io.rw.data_in)(Seq(
     CSR_S -> (data_out | io.rw.data_in),
     CSR_C -> (data_out & ~io.rw.data_in),
     CSR_W -> io.rw.data_in
@@ -140,7 +140,7 @@ class CSR(confHash: UInt, implicit val conf: FlexpretConfiguration) extends Modu
   // This allows non-priviledged mode for instructions that do not alter the CSRs
   val fake_write = WireInit(false.B)
   if (conf.privilegedMode) {
-    fake_write := MuxLookup(io.rw.csr_type, false.B, Array(
+    fake_write := MuxLookup(io.rw.csr_type, false.B)(Seq(
       CSR_S -> (io.rw.data_in === 0.U),
       CSR_C -> (io.rw.data_in === 0.U),
       CSR_W -> false.B

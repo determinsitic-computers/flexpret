@@ -212,13 +212,13 @@ class Datapath(confHash: UInt, val debug: Boolean = false)(implicit conf: Flexpr
   val regfile_rs1_data = if (debug) io.debugIO.get.rs1_value else regfile.io.read(0).data
   val regfile_rs2_data = if (debug) io.debugIO.get.rs2_value else regfile.io.read(1).data
   if (conf.bypassing) {
-    dec_rs1_data := MuxLookup(io.control.dec_rs1_sel, regfile_rs1_data, Array(
+    dec_rs1_data := MuxLookup(io.control.dec_rs1_sel, regfile_rs1_data)(Seq(
       RS1_EXE -> exe_rd_data,
       RS1_MEM -> mem_rd_data,
       RS1_WB -> wb_rd_data //,
       //RS1_DEC -> regfile_rs1_data //FIXME: causes chisel verilog bug
     ))
-    dec_rs2_data := MuxLookup(io.control.dec_rs2_sel, regfile_rs2_data, Array(
+    dec_rs2_data := MuxLookup(io.control.dec_rs2_sel, regfile_rs2_data)(Seq(
       RS2_EXE -> exe_rd_data,
       RS2_MEM -> mem_rd_data,
       RS2_WB -> wb_rd_data //,
@@ -238,7 +238,7 @@ class Datapath(confHash: UInt, val debug: Boolean = false)(implicit conf: Flexpr
   // For CSR
   val dec_imm_z = Cat(0.U(27.W), dec_reg_inst(19, 15))
 
-  val dec_imm = MuxLookup(io.control.dec_imm_sel, dec_imm_i, Array(
+  val dec_imm = MuxLookup(io.control.dec_imm_sel, dec_imm_i)(Seq(
     IMM_S -> dec_imm_s,
     IMM_B -> dec_imm_b,
     IMM_U -> dec_imm_u,
@@ -248,11 +248,11 @@ class Datapath(confHash: UInt, val debug: Boolean = false)(implicit conf: Flexpr
   ))
 
   // Set operands for ALU.
-  val dec_op1 = MuxLookup(io.control.dec_op1_sel, 0.U(32.W), Array(
+  val dec_op1 = MuxLookup(io.control.dec_op1_sel, 0.U(32.W))(Seq(
     OP1_RS1 -> dec_rs1_data,
     OP1_PC -> dec_reg_pc
   )) // default: OP1_0
-  val dec_op2 = MuxLookup(io.control.dec_op2_sel, 0.U(32.W), Array(
+  val dec_op2 = MuxLookup(io.control.dec_op2_sel, 0.U(32.W))(Seq(
     OP2_RS2 -> dec_rs2_data,
     OP2_IMM -> dec_imm
   )) // default: OP2_0
@@ -296,7 +296,7 @@ class Datapath(confHash: UInt, val debug: Boolean = false)(implicit conf: Flexpr
   val exe_ltu = exe_reg_rs1_data < exe_reg_rs2_data
   val exe_eq = exe_reg_rs1_data === exe_reg_rs2_data
   val def_exe_br_cond = false.B
-  exe_br_cond := MuxLookup(io.control.exe_br_type, def_exe_br_cond, Array(
+  exe_br_cond := MuxLookup(io.control.exe_br_type, def_exe_br_cond)(Seq(
     BR_EQ -> exe_eq,
     BR_LT -> exe_lt,
     BR_LTU -> exe_ltu,

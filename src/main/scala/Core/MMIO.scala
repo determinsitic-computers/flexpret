@@ -16,7 +16,6 @@ import chisel3.util.MixedVec
 import chisel3.util.MuxLookup
 import chisel3.util.Queue
 
-import chisel3.experimental.AutoCloneType
 import chisel3.experimental.BundleLiterals._
 
 // Can't define a type at the top level...
@@ -59,7 +58,7 @@ package object core {
   /**
    * Record that actually represents the I/Os going into the module.
    */
-  class MMIOIns(val config: Seq[MMIORow]) extends Record with AutoCloneType {
+  class MMIOIns(val config: Seq[MMIORow]) extends Record {
     MMIORow.checkConfig(config)
 
     val elements = ListMap[String, Data](config.map { case (key, bits, offset, direction) =>
@@ -88,7 +87,7 @@ package object core {
   /**
    * Record that actually represents the I/Os going into the module.
    */
-  class MMIOOuts(val config: Seq[MMIORow]) extends Record with AutoCloneType {
+  class MMIOOuts(val config: Seq[MMIORow]) extends Record {
     MMIORow.checkConfig(config)
 
     val elements = ListMap[String, Data](config.map { case (key, bits, offset, direction) =>

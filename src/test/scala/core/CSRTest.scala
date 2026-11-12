@@ -22,6 +22,8 @@ import flexpret.core.FlexpretConfiguration
 import flexpret.core.InstMemConfiguration
 
 class CSRTestHelper(val c: CSR) {
+  def timescope(block: => Unit): Unit = block
+
   /**
    * Write a CSR. Note that this does NOT step the clock.
    */
@@ -52,6 +54,8 @@ class CSRTestHelper(val c: CSR) {
 }
 
 class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
+  def timescope(block: => Unit): Unit = block
+
   behavior of "CSR"
 
   val threads = 4
@@ -74,7 +78,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   implicit def csrToHelper(c: CSR) = new CSRTestHelper(c)
 
   it should "write a GPIO CSR" in {
-    test(csrNoPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrNoPriv) { c =>
       timescope {
         /**
          * FIXME: 
@@ -102,7 +106,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "read a GPIO CSR" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrPriv) { c =>
       timescope {
         // Set the inputs
         c.io.gpio.in(0).poke(1.U)
@@ -120,7 +124,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "write tohost" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrPriv) { c =>
       timescope {
         val csrVal = "habcd_ef88".U
         c.writeCSR(CSRs.tohost0, csrVal)
@@ -137,7 +141,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "check that tohost registers do not intervene with each other" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrPriv) { c =>
       timescope {
         val csrVals = Vector("h12345678".U, "hdeaddead".U, "hbeefbeef".U, "hdeadbeef".U)
         
@@ -159,7 +163,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "check that fake writes to read-only CSRs are okay" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrPriv) { c =>
       timescope {
         // Set bits with mask = 0 should be okay
         c.writeCSRtype(CSRs.time, "h0000_0000".U, CSR_S)
@@ -203,7 +207,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "check that a short delay until works as expected" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrPriv) { c =>
       timescope {
         // Should trigger in two clock cycles, since each clock cycle increments
         // timer by 10 ns
@@ -229,7 +233,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "check that multiple delays work as expected" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(csrPriv) { c =>
       timescope {
         // Write as tid = 2
         c.io.rw.thread.poke(2.U)
@@ -275,7 +279,7 @@ class CSRTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "check that delay less than current time has same effect as nop" in {
-    test(csrPriv).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c => 
+    test(csrPriv) { c => 
       timescope {
         // Advance clock a little
         c.clock.step()

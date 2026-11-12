@@ -69,7 +69,7 @@ class ALU extends Module {
   dontCare := DontCare
 
   import ALUTypes._
-  io.result := MuxLookup(io.func.asUInt, dontCare, Seq[(UInt, UInt)](
+  io.result := MuxLookup(io.func.asUInt, dontCare)(Seq[(UInt, UInt)](
     Add.asUInt -> (io.op1 + io.op2),
     Sub.asUInt -> (io.op1 - io.op2),
     ShiftLeft.asUInt -> (io.op1 << io.shift)(31, 0),

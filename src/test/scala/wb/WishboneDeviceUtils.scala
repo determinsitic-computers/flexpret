@@ -6,6 +6,8 @@ import org.scalatest.flatspec.AnyFlatSpec
 import wishbone._
 
 object WishboneDeviceUtils {
+  def timescope(block: => Unit): Unit = block
+
   def wbWrite(c: WishboneDevice, addr: Int, data: Int) = {
     timescope {
       c.io.port.we.poke(true.B)

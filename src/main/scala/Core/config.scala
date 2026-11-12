@@ -70,7 +70,7 @@ case class FlexpretConfiguration(
   // General
   // TODO(edwardw): test this assumption and remove the use of the deprecated log2Up
   //require(threads > 0, "Cannot have zero hardware threads")
-  val threadBits    = if (Chisel.log2Up(threads) == 0) 1 else Chisel.log2Up(threads)
+  val threadBits    = if (log2Ceil(threads) == 0) 1 else log2Ceil(threads)
 
   // Datapath
   // If true, allow arbitrary interleaving of threads in pipeline using bypass paths

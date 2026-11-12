@@ -72,7 +72,7 @@ class RegisterFile(val threads: Int, val readPorts: Int = 2, val writePorts: Int
     }
 
     val readIndexReg = RegNext(readIndex)
-    readPort.data := MuxLookup(readIndexReg, regfileRead, readUnderWrites)
+    readPort.data := MuxLookup(readIndexReg, regfileRead)(readUnderWrites)
 
   }
 

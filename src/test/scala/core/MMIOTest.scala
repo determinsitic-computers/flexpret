@@ -7,7 +7,7 @@ License: See LICENSE.txt
 package flexpret.core.test
 
 import chisel3._
-import chisel3.stage.ChiselStage
+import circt.stage.ChiselStage
 import chisel3.util.DecoupledIO
 
 import chiseltest._
@@ -17,6 +17,8 @@ import org.scalatest.matchers.should.Matchers
 import flexpret.core._
 
 class MMIOCoreTest extends AnyFlatSpec with ChiselScalatestTester {
+  def timescope(block: => Unit): Unit = block
+
   behavior of "MMIOCore"
 
   val config = Seq(
@@ -39,19 +41,19 @@ class MMIOCoreTest extends AnyFlatSpec with ChiselScalatestTester {
 
   it should "prohibit duplicate keys" in {
     intercept[java.lang.IllegalArgumentException] {
-      ChiselStage.elaborate { new MMIOCore(Seq(
+      ChiselStage.emitSystemVerilog(new MMIOCore(Seq(
         ("dup", 2, 0, MMIOInput),
         ("dup", 2, 1, MMIOOutput)
-      )) }
+      )))
     }
   }
 
   it should "prohibit duplicate offsets" in {
     intercept[java.lang.IllegalArgumentException] {
-      ChiselStage.elaborate { new MMIOCore(Seq(
+      ChiselStage.emitSystemVerilog(new MMIOCore(Seq(
         ("a", 4, 0, MMIOInput),
         ("b", 8, 0, MMIOOutput)
-      )) }
+      )))
     }
   }
 
@@ -136,15 +138,15 @@ class MMIOCoreTest extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "read inputs" in {
-    test(new MMIOCore(config)).withAnnotations(Seq(treadle.WriteVcdAnnotation)).apply(testReads)
+    test(new MMIOCore(config)).apply(testReads)
   }
 
   it should "write outputs" in {
-    test(new MMIOCore(config)).withAnnotations(Seq(treadle.WriteVcdAnnotation)).apply(testWrites)
+    test(new MMIOCore(config)).apply(testWrites)
   }
 
   it should "read and write at the same time" in {
-    test(new MMIOCore(config)).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(new MMIOCore(config)) { c =>
       fork {
         testReads(c)
       } .fork {

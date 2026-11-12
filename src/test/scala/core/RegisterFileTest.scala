@@ -16,6 +16,8 @@ import org.scalatest.matchers.should.Matchers
 import flexpret.core.{RegisterFile, RegisterFileReadIO, RegisterFileWriteIO}
 
 class RegisterFileTest extends AnyFlatSpec with ChiselScalatestTester {
+  def timescope(block: => Unit): Unit = block
+
   behavior of "RegisterFile"
 
   val threads = 3

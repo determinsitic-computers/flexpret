@@ -19,6 +19,8 @@ import flexpret.core.FlexpretConfiguration
 import flexpret.core.InstMemConfiguration
 
 class LoadStoreTest extends AnyFlatSpec with ChiselScalatestTester {
+  def timescope(block: => Unit): Unit = block
+
   behavior of "LoadStore"
 
   val threads = 1
@@ -28,7 +30,7 @@ class LoadStoreTest extends AnyFlatSpec with ChiselScalatestTester {
   def loadStore = new LoadStore()(conf=conf)
 
   it should "not crash with an invalid request if not enabled" in {
-    test(loadStore).withAnnotations(Seq(treadle.WriteVcdAnnotation)) { c =>
+    test(loadStore) { c =>
       timescope {
         // No load or store operation with (invalid) SH lingering
         c.io.load.poke(false.B)

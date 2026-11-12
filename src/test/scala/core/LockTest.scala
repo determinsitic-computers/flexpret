@@ -1,7 +1,5 @@
 package flexpret.core.test
 
-import org.scalatest._
-
 import chisel3._
 
 import chiseltest._
@@ -14,7 +12,9 @@ import flexpret.core.FlexpretConfiguration
 import flexpret.core.InstMemConfiguration
 
 
-class LockTest extends FlatSpec with ChiselScalatestTester {
+class LockTest extends AnyFlatSpec with ChiselScalatestTester {
+  def timescope(block: => Unit): Unit = block
+
   behavior of "Lock"
 
   val threads = 2

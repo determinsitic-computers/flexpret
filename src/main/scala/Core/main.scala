@@ -8,6 +8,7 @@ License: See LICENSE.txt
 package Core
 
 import chisel3._
+import circt.stage.ChiselStage
 
 // Remove this eventually...
 import flexpret.core.{VerilatorTop, FpgaTop}
@@ -21,16 +22,16 @@ object CoreMain {
     val coreConfig = FlexpretConfiguration.fromFile()
 
     // Pass configuration to FlexPRET processor.
-    (new chisel3.stage.ChiselStage).emitVerilog(new VerilatorTop(coreConfig, configHash), chiselArgs)
-  } 
-  
+    ChiselStage.emitSystemVerilogFile(new VerilatorTop(coreConfig, configHash), args = chiselArgs)
+  }
+
   def fpgaMain(args: Array[String]) : Unit = {
     val configHash = args(0).asUInt
     val chiselArgs = args.slice(1, args.length)
     val coreConfig = FlexpretConfiguration.fromFile()
 
     // Pass configuration to FlexPRET processor.
-    (new chisel3.stage.ChiselStage).emitVerilog(new FpgaTop(coreConfig, configHash), chiselArgs)
+    ChiselStage.emitSystemVerilogFile(new FpgaTop(coreConfig, configHash), args = chiselArgs)
   } 
     
   def main(args: Array[String]): Unit = {
