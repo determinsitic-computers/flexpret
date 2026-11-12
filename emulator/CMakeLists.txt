@@ -18,7 +18,7 @@ add_custom_command(
   WORKING_DIRECTORY 
     ${PROJECT_SOURCE_DIR}
   BYPRODUCTS
-    "${CMAKE_CURRENT_BINARY_DIR}/VerilatorTop.v"
+    "${CMAKE_CURRENT_BINARY_DIR}/VerilatorTop.sv"
     "${CMAKE_CURRENT_BINARY_DIR}/DualPortBram.v"
     "${CMAKE_CURRENT_BINARY_DIR}/obj_dir"
   DEPENDS

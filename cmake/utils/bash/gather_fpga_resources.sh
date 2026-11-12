@@ -10,13 +10,13 @@
 set -e
 
 # Generate FpgaTop.v
-sbt 'run fpga h'"$1"' --no-dedup --target-dir '"$2"
+sbt 'run fpga h'"$1"' --target-dir '"$2"
 
 prjfolder=$(pwd)
 
-# Rename FpgaTop.v to flexpret.v
+# Rename FpgaTop.sv to flexpret.v
 cd $2
-mv FpgaTop.v rtl/flexpret.v
+mv FpgaTop.sv rtl/flexpret.v
 
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 RED='\033[0;31m'

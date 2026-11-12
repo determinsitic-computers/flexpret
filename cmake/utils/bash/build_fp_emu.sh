@@ -8,7 +8,7 @@
 set -e
 
 # Generates VerilatorTop.v
-sbt 'run verilator h'"$1"' --no-dedup --target-dir build/emulator'
+sbt 'run verilator h'"$1"' --target-dir build/emulator'
 
 # Fetch dual port BRAM from resources
 cp src/main/resources/DualPortBramEmulator.v build/emulator/DualPortBram.v
@@ -16,7 +16,7 @@ cp src/main/resources/DualPortBramEmulator.v build/emulator/DualPortBram.v
 
 # Run Verilator command
 cd build/emulator
-verilator --cc VerilatorTop.v --exe --trace --trace-structs --trace-underscore --build "${@:2}"
+verilator --cc VerilatorTop.sv --exe --trace --trace-structs --trace-underscore --build "${@:2}"
 
 # Copy Verilator generated binary
 cp obj_dir/VVerilatorTop fp-emu
