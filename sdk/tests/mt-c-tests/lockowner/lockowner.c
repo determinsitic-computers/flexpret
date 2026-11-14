@@ -7,12 +7,12 @@
 
 fp_lock_t lock = FP_LOCK_INITIALIZER;
 
-void* t1_do_work() {
+void* t1_do_work(void *arg) {
     fp_lock_acquire(&lock);
     return NULL;
 }
 
-void* t2_do_work() {
+void* t2_do_work(void *arg) {
     fp_lock_release(&lock);
     return NULL;
 }

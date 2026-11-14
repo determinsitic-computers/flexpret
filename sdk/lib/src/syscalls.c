@@ -183,8 +183,23 @@ void *_sbrk(int incr) {
         return (void *) -1;
     }
 
-   heap_end += incr;
-   return (void *) prev_heap_end;
+    heap_end += incr;
+    return (void *) prev_heap_end;
+}
+
+// Override _sbrk_r so it checks _sbrk's return value directly rather than
+// relying on errno propagation between reent structs. Without this, newlib's
+// compiled _sbrk_r resets ptr->_errno before calling _sbrk, then checks
+// ptr->_errno after — but our _sbrk stores errno in __getreent()->_errno (a
+// different location), so _sbrk_r incorrectly treats (void*)-1 as a valid
+// address and malloc returns non-NULL for oversized allocations.
+void *_sbrk_r(struct _reent *ptr, ptrdiff_t incr) {
+    ptr->_errno = 0;
+    void *ret = _sbrk((int)incr);
+    if (ret == (void *) -1) {
+        ptr->_errno = ENOMEM;
+    }
+    return ret;
 }
 
 int _stat (const char *path, struct stat *st) {
@@ -234,6 +249,7 @@ int _gettimeofday(struct timeval *tv, void *tz) {
     tv->tv_usec = ns_to_us(ns % (int) (1e9));
     return 0;
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Malloc required functions

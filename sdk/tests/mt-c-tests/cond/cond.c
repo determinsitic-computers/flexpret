@@ -7,7 +7,7 @@ fp_lock_t lock = FP_LOCK_INITIALIZER;
 fp_cond_t cond = FP_COND_INITIALIZER(&lock);
 int count = 0;
 
-void* t1() {
+void* t1(void *arg) {
     fp_lock_acquire(&lock);
     fp_cond_wait(&cond);
     count++;
@@ -15,7 +15,7 @@ void* t1() {
     return NULL;
 }
 
-void* t2() {
+void* t2(void *arg) {
     fp_lock_acquire(&lock);
     fp_cond_wait(&cond);
     count++;

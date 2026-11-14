@@ -12,9 +12,6 @@
 
 #define NELEMENTS_ARRAY (10)
 
-extern char __sheap;
-extern char __eheap;
-
 int main() {
 
     uint32_t* a = malloc(sizeof(uint32_t));
@@ -55,7 +52,9 @@ int main() {
     fp_assert(new, "Could not allocate %i bytes", sizeof(uint32_t) * NELEMENTS_ARRAY);
     free(new);
 
-    // Check that an extremely large malloc does not work
+    // Check that an extremely large malloc does not work.
+    // -fno-builtin-malloc (CMakeLists.txt) is what prevents GCC from assuming
+    // malloc never returns NULL and compiling this assert as an unconditional abort.
     char *massive = malloc(0x30000000);
     fp_assert(massive == NULL, "Massive malloc worked\n");
     fp_assert(errno == ENOMEM, "Errno not as expected, was: %s\n", strerror(errno));
@@ -66,18 +65,18 @@ int main() {
      * Malloc the entire heap and check that it is no longer possible to malloc
      * anything. This is the last test, since we have no way of getting the heap
      * back :)
-     * 
-     * To malloc the entire heap, it needs to be done in diminishing blocks, since
-     * the heap is likely fragmented from earlier use. It will not work to just
-     * malloc the entire heap in one go - that will leave some fragments.
-     * 
+     *
+     * Allocate in diminishing block sizes to consume all heap regardless of
+     * fragmentation. The inner drain loop consumes any final MINSIZE fragment
+     * that dlmalloc can serve via a last sbrk call at the exact heap boundary.
      */
     uint32_t block_size = 0x10000;
-    while (block_size > 1) {
+    while (block_size >= 1) {
         if (malloc(block_size) == NULL) {
             block_size /= 2;
         }
     }
+    while (malloc(1) != NULL) {}
 
     fp_assert(malloc(1) == NULL, "Could malloc when not expected\n");
     fp_assert(errno == ENOMEM, "Errno not set as expected\n");

@@ -13,7 +13,7 @@ bool ready = false;
 fp_thread_t tid[2] = {1, 2};
 
 // t1 to be canceled by t2
-void* t1_do_work() {
+void* t1_do_work(void *arg) {
     fp_lock_acquire(&lock);
     ready = true;
     fp_lock_release(&lock);
@@ -25,7 +25,7 @@ void* t1_do_work() {
 }
 
 // t2 to cancel t1
-void* t2_do_work() {
+void* t2_do_work(void *arg) {
     while(!ready);
     fp_thread_cancel(tid[0]);
     printf("Sucessfully cancelled thread %i\n", (int) tid[0]);

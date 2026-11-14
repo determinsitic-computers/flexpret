@@ -135,4 +135,8 @@ function(fp_add_outputs executable)
   endif()
 
   target_link_options(${executable} PRIVATE "-Wl,-L" ${LINKER_INCLUDE})
+  # Compile malloc_guard.c directly into the executable (not into libfp-sdk.a)
+  # so the --wrap references stay out of the library.
+  target_sources(${executable} PRIVATE "$ENV{FP_SDK_PATH}/lib/src/malloc_guard.c")
+  target_link_options(${executable} PRIVATE "-Wl,--wrap=malloc" "-Wl,--wrap=calloc" "-Wl,--wrap=realloc")
 endfunction()
